@@ -3,8 +3,11 @@ package com.example.santos_application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -13,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,29 +26,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Main Act of my Application
+// Main Activity of my Application
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             MyApp()
         }
     }
 }
 
-// a data class to represent a question, its options, and the correct answer.
+// Data class to represent a question, its options, and the correct answer.
 data class Question(val question: String, val options: List<String>, val answer: String)
 
-// This is a composable function that represents the entire quiz application.
+// Main composable function that represents the entire quiz application.
 @Composable
 fun MyApp() {
-    // To keep track of the current question index, score, and quiz completion status.
+    // State to keep track of the current question index, score, and quiz completion status.
     var currentQuestionIndex by remember { mutableStateOf(0) }
     var score by remember { mutableStateOf(0) }
     var quizFinished by remember { mutableStateOf(false) }
 
-    val questions = listOf(  // List of questions, choices, and correct answers.
+    // List of questions, choices, and correct answers.
+    val questions = listOf(
         Question(
             "Is Chihiro a Boy or a Girl?",
             listOf("Boy", "Girl"),
@@ -71,7 +76,7 @@ fun MyApp() {
         ),
     )
 
-    // To manage which screen to display
+    // State to manage which screen to display
     var currentScreen by remember { mutableStateOf(Screen.Start) }
 
     // Layout of the application using Box and Column functions
@@ -83,7 +88,7 @@ fun MyApp() {
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -97,7 +102,7 @@ fun MyApp() {
             Text(
                 text = "Welcome to my Spirited Away Quiz! ♡ ",
                 color = Color.White,
-                fontSize = 23.sp,
+                fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 4.dp)
@@ -113,54 +118,64 @@ fun MyApp() {
             )
             Image(
                 painter = painterResource(id = R.drawable.pic_1),
-                contentDescription = "pic_1",
+                contentDescription = "Spirited Away Image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .padding(vertical = 0.dp)
+                    .padding(vertical = 8.dp)
+                    .clip(RoundedCornerShape(12.dp)) // Clip with rounded corners
+                    .shadow(10.dp, shape = RoundedCornerShape(12.dp)) // Add shadow
+                    .clickable {
+                        // Click listener for the image if needed
+                    }
             )
-
             // Display different screens based on currentScreen
-            when (currentScreen) {
-                Screen.Start -> StartScreen(
-                    onStartQuiz = {
-                        currentScreen = Screen.Quiz
-                    }
-                )
-                Screen.Quiz -> QuizScreen(
-                    question = questions[currentQuestionIndex],
-                    onOptionSelected = { selectedOption ->
-                        if (selectedOption == questions[currentQuestionIndex].answer) {
-                            score++
+            Crossfade(
+                targetState = currentScreen,
+                animationSpec = tween(durationMillis = 500)
+            ) { screen ->
+                when (screen) {
+                    Screen.Start -> StartScreen(
+                        onStartQuiz = {
+                            currentScreen = Screen.Quiz
                         }
-                        if (currentQuestionIndex < questions.size - 1) {
-                            currentQuestionIndex++
-                        } else {
-                            currentScreen = Screen.Result
+                    )
+                    Screen.Quiz -> QuizScreen(
+                        question = questions[currentQuestionIndex],
+                        onOptionSelected = { selectedOption ->
+                            if (selectedOption == questions[currentQuestionIndex].answer) {
+                                score++
+                            }
+                            if (currentQuestionIndex < questions.size - 1) {
+                                currentQuestionIndex++
+                            } else {
+                                currentScreen = Screen.Result
+                            }
                         }
-                    }
-                )
-                Screen.Result -> ResultScreen(
-                    score = score,
-                    onRestartQuiz = {
-                        currentQuestionIndex = 0
-                        score = 0
-                        currentScreen = Screen.Start
-                    }
-                )
+                    )
+                    Screen.Result -> ResultScreen(
+                        score = score,
+                        onRestartQuiz = {
+                            currentQuestionIndex = 0
+                            score = 0
+                            currentScreen = Screen.Start
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-// To create option buttons for each question.
+// Composable function to create option buttons for each question.
 @Composable
 fun OptionButton(option: String, onOptionSelected: (String) -> Unit) {
     Button(
         onClick = { onOptionSelected(option) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(12.dp)), // Clip with rounded corners
         colors = ButtonDefaults.buttonColors(Color(0xFFFF69B4)),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -178,16 +193,24 @@ fun StartScreen(onStartQuiz: () -> Unit) {
     ) {
         Spacer(modifier = Modifier.weight(1f)) // Spacer to push the button to the vertical center
         Button(
-            onClick = onStartQuiz,
+            onClick = {
+                onStartQuiz()
+            },
             colors = ButtonDefaults.buttonColors(Color(0xFFFF69B4)),
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(12.dp)) // Clip with rounded corners
+                .clickable(
+                    onClick = {
+                        onStartQuiz()
+                    }
+                )
         ) {
             Text(text = "Start Quiz", color = Color.White, fontSize = 20.sp)
         }
         Spacer(modifier = Modifier.weight(10f)) // Spacer to push the button to the vertical center
     }
 }
-
 
 // Quiz screen composable
 @Composable
@@ -203,7 +226,11 @@ fun QuizScreen(question: Question, onOptionSelected: (String) -> Unit) {
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .clip(RoundedCornerShape(12.dp)) // Clip with rounded corners
+                .background(Color(0xFFFF69B4)) // Background color
+                .padding(16.dp)
         )
         question.options.forEach { option ->
             OptionButton(
@@ -242,7 +269,9 @@ fun ResultScreen(score: Int, onRestartQuiz: () -> Unit) {
         Button(
             onClick = onRestartQuiz,
             colors = ButtonDefaults.buttonColors(Color(0xFFFF69B4)),
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(12.dp)) // Clip with rounded corners
         ) {
             Text(text = "Restart Quiz", color = Color.White, fontSize = 20.sp)
         }
