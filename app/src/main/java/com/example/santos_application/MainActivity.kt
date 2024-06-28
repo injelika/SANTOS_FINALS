@@ -87,7 +87,7 @@ fun MyApp() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆       ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆       ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆       ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆       ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆",
+                text = "⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆   ♡   ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆   ♡   ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆   ♡  ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆   ♡   ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆",
                 fontSize = 9.5.sp,
                 color = Color(0xFFFF69B4),
                 textAlign = TextAlign.Center,
@@ -103,7 +103,7 @@ fun MyApp() {
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = "⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆    ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆  By: Santos, Angelica S.⋆  ˚｡⋆୨♡୧⋆ ˚｡⋆    ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆ ",
+                text = "⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆ ♡ ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆  By: Santos, Angelica S.⋆  ˚｡⋆୨♡୧⋆ ˚｡⋆ ♡  ⋆ ˚｡⋆୨♡୧⋆ ˚｡⋆ ",
                 color = Color(0xFFFF69B4),
                 fontSize = 9.5.sp,
                 fontWeight = FontWeight.Bold,
